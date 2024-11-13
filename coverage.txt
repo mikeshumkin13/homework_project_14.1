@@ -1,0 +1,22 @@
+============================= test session starts ==============================
+platform darwin -- Python 3.12.4, pytest-8.3.3, pluggy-1.5.0
+rootdir: /Users/a12345/PycharmProjects/homework_Project_14_1
+configfile: pyproject.toml
+plugins: cov-6.0.0
+collected 4 items
+
+tests/test_models.py ...                                                 [ 75%]
+tests/test_utils.py .                                                    [100%]
+
+---------- coverage: platform darwin, python 3.12.4-final-0 ----------
+Name              Stmts   Miss  Cover   Missing
+-----------------------------------------------
+src/__init__.py       0      0   100%
+src/main.py          44     44     0%   1-67
+src/models.py        17      0   100%
+src/utils.py         11      0   100%
+-----------------------------------------------
+TOTAL                72     44    39%
+
+
+============================== 4 passed in 0.07s ===============================
