@@ -1,5 +1,6 @@
 class Product:
     """Класс продукта магазина."""
+
     def __init__(self, name, description, price, quantity):
         self.name = name
         self.description = description
@@ -19,9 +20,24 @@ class Product:
         else:
             print("Цена не должна быть нулевая или отрицательная")
 
+    @classmethod
+    def new_product(cls, product_dict):
+        """
+        Создание нового продукта из словаря.
+        :param product_dict: dict - данные продукта.
+        :return: Product - созданный объект.
+        """
+        return cls(
+            name=product_dict["name"],
+            description=product_dict["description"],
+            price=product_dict["price"],
+            quantity=product_dict["quantity"]
+        )
+
 
 class Category:
     """Класс категории товаров."""
+
     product_count = 0
 
     def __init__(self, name, description, products=None):
@@ -42,13 +58,3 @@ class Category:
         if isinstance(product, Product):
             self._products.append(product)
             Category.product_count += 1
-
-    @classmethod
-    def new_product(cls, product_dict):
-        """Создание нового продукта из словаря."""
-        return Product(
-            name=product_dict["name"],
-            description=product_dict["description"],
-            price=product_dict["price"],
-            quantity=product_dict["quantity"]
-        )
