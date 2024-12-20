@@ -37,13 +37,13 @@ class Product:
 
 class Category:
     """Класс категории товаров."""
-
     product_count = 0
 
     def __init__(self, name, description, products=None):
         self.name = name
         self.description = description
         self._products = products if products else []  # Приватный атрибут
+        Category.product_count += len(self._products)  # Увеличиваем счётчик продуктов
 
     @property
     def products(self):
@@ -58,3 +58,13 @@ class Category:
         if isinstance(product, Product):
             self._products.append(product)
             Category.product_count += 1
+
+    @classmethod
+    def new_product(cls, product_dict):
+        """Создание нового продукта из словаря."""
+        return Product(
+            name=product_dict["name"],
+            description=product_dict["description"],
+            price=product_dict["price"],
+            quantity=product_dict["quantity"]
+        )
