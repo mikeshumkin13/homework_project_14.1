@@ -38,12 +38,11 @@ def test_add_product():
     category.add_product(product)
 
     # Проверяем добавление через геттер
-    assert "Samsung QLED 55" in category.products  # Проверяем, что продукт добавлен
+    assert any(product.name == "Samsung QLED 55" for product in category.products)
     assert Category.product_count == initial_count + 1
 
 
 def test_products_getter():
-    """Проверяет работу геттера для списка продуктов."""
     category = Category("Телевизоры", "Категория для телевизоров")
     product1 = Product("Samsung QLED 55", "55\" 4K UHD", 123000.0, 7)
     product2 = Product("LG OLED 65", "65\" 4K HDR", 210000.0, 5)
@@ -55,8 +54,13 @@ def test_products_getter():
         "Samsung QLED 55, 123000.0 руб. Остаток: 7 шт.\n"
         "LG OLED 65, 210000.0 руб. Остаток: 5 шт."
     )
-    assert category.products == expected_output
 
+    # Преобразуем список продуктов в строковое представление
+    actual_output = "\n".join(
+        [f"{product.name}, {product.price} руб. Остаток: {product.quantity} шт." for product in category.products]
+    )
+
+    assert actual_output == expected_output
 
 def test_price_setter():
     """Проверяет корректность работы сеттера цены."""
