@@ -38,3 +38,5 @@ if __name__ == "__main__":
     print(f"Новая цена: {new_product.price}")
     new_product.price = -100
     print(f"Попытка установить некорректную цену: {new_product.price}")
+
+
