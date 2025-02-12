@@ -14,7 +14,7 @@ def test_category_initialization(category1):
     """Проверяет корректность инициализации объекта Category."""
     assert category1.name == "Смартфоны"
     assert category1.description == "Категория для смартфонов"
-    assert len(category1._products) == 3  # Прямой доступ к приватному атрибуту
+    assert len(category1.products) == 3  # Используем геттер для доступа
 
 
 def test_category_and_product_counts():
@@ -37,7 +37,8 @@ def test_add_product():
     initial_count = Category.product_count
     category.add_product(product)
 
-    assert product in category._products  # Проверяем добавление в список
+    # Проверяем добавление через геттер
+    assert "Samsung QLED 55" in category.products  # Проверяем, что продукт добавлен
     assert Category.product_count == initial_count + 1
 
 
@@ -86,3 +87,4 @@ def test_new_product():
     assert new_product.description == "Compact phone"
     assert new_product.price == 70000.0
     assert new_product.quantity == 15
+
