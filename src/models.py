@@ -42,6 +42,8 @@ class Category:
         Category.product_count += len(self.products)  # Увеличиваем счетчик продуктов
 
     def add_product(self, product):
+        if not isinstance(product, Product):  # Проверяем, что product - это экземпляр Product или его наследника
+            raise TypeError("Можно добавлять только объекты класса Product или его наследников")
         self.products.append(product)
         Category.product_count += 1  # Увеличиваем счетчик при добавлении продукта
 

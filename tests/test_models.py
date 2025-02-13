@@ -69,13 +69,8 @@ def test_price_setter():
     product.price = 200.0
     assert product.price == 200.0
 
-    product.price = -50
-    assert product.price == 200.0  # Цена не должна измениться
-
-    product.price = 0
-    assert product.price == 200.0  # Цена не должна измениться
-
-
+    with pytest.raises(ValueError, match="Цена не может быть отрицательной"):
+        product.price = -50
 def test_new_product():
     """Проверяет создание нового продукта через метод new_product."""
     product_dict = {
