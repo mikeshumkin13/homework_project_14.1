@@ -31,6 +31,16 @@ class Product:
     def __str__(self):
         return self.name
 
+    @classmethod
+    def new_product(cls, product_dict):
+        """Создает новый продукт на основе данных из словаря."""
+        return cls(
+            product_dict["name"],
+            product_dict["description"],
+            product_dict["price"],
+            product_dict["quantity"]
+        )
+
 
 class Category:
     product_count = 0  # Переменная для отслеживания общего количества продуктов
@@ -57,13 +67,3 @@ class Category:
             self._products = value
         else:
             raise ValueError("Products must be a list")
-
-    @staticmethod
-    def new_product(product_dict):
-        """Создает новый продукт на основе данных из словаря."""
-        return Product(
-            product_dict["name"],
-            product_dict["description"],
-            product_dict["price"],
-            product_dict["quantity"]
-        )

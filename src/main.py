@@ -36,7 +36,9 @@ if __name__ == "__main__":
     print(f"Старая цена: {new_product.price}")
     new_product.price = 55000
     print(f"Новая цена: {new_product.price}")
-    new_product.price = -100
-    print(f"Попытка установить некорректную цену: {new_product.price}")
+    try:
+        new_product.price = -100  # Ошибка!
+    except ValueError as e:
+        print(f"Ошибка: {e}")
 
 
