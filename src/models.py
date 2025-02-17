@@ -1,27 +1,69 @@
 class Product:
-    """Класс, представляющий продукт для приложения."""
-
     def __init__(self, name, description, price, quantity):
         self.name = name
         self.description = description
-        self.price = price
+        self.__price = price
         self.quantity = quantity
+
+    @property
+    def price(self):
+        """Геттер для цены"""
+        return self.__price
+
+    @price.setter
+    def price(self, new_price):
+        """Сеттер для цены"""
+        if new_price < 0:
+            raise ValueError("Цена не может быть отрицательной")
+        self.__price = new_price
+
+    @property
+    def quantity(self):
+        return self._quantity
+
+    @quantity.setter
+    def quantity(self, value):
+        if value >= 0:
+            self._quantity = value
+        else:
+            print("Количество не может быть отрицательным")
+
+    def __str__(self):
+        return self.name
+
+    @classmethod
+    def new_product(cls, product_dict):
+        """Создает новый продукт на основе данных из словаря."""
+        return cls(
+            product_dict["name"],
+            product_dict["description"],
+            product_dict["price"],
+            product_dict["quantity"]
+        )
 
 
 class Category:
-    """Класс, представляющий категорию продуктов для приложения."""
+    product_count = 0  # Переменная для отслеживания общего количества продуктов
 
-    category_count = 0  # Атрибут класса для подсчета категорий
-    product_count = 0   # Атрибут класса для подсчета продуктов
-
-    def __init__(self, name, description, products):
+    def __init__(self, name, description, products=None):
         self.name = name
         self.description = description
-        self.products = products
+        self.products = products or []
+        Category.product_count += len(self.products)  # Увеличиваем счетчик продуктов
 
-    @classmethod
-    def increment_counts(cls, products):
-        """Увеличивает счетчики категорий и продуктов."""
-        cls.category_count += 1
-        cls.product_count += len(products)
+    def add_product(self, product):
+        if not isinstance(product, Product):  # Проверяем, что product - это экземпляр Product или его наследника
+            raise TypeError("Можно добавлять только объекты класса Product или его наследников")
+        self.products.append(product)
+        Category.product_count += 1  # Увеличиваем счетчик при добавлении продукта
 
+    @property
+    def products(self):
+        return self._products
+
+    @products.setter
+    def products(self, value):
+        if isinstance(value, list):
+            self._products = value
+        else:
+            raise ValueError("Products must be a list")

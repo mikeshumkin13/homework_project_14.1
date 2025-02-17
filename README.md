@@ -58,22 +58,46 @@ poetry run pytest --cov=src --cov-report=term-missing
 Загрузка данных из JSON: проверка корректного создания объектов на основе данных из JSON-файла.
 Отчет о покрытии кода можно найти в файле coverage.txt, который включает информацию обо всех протестированных и непокрытых строках кода.
 
-**Пример структуры проекта**
-
+**Cтруктура проекта**
 .
 ├── README.md
+├── coverage.txt
+├── htmlcov
+│   ├── class_index.html
+│   ├── coverage_html_cb_6fb7b396.js
+│   ├── favicon_32_cb_58284776.png
+│   ├── function_index.html
+│   ├── index.html
+│   ├── keybd_closed_cb_ce680311.png
+│   ├── status.json
+│   ├── style_cb_8e611ae1.css
+│   ├── z_145eef247bfb46b6___init___py.html
+│   ├── z_145eef247bfb46b6_main_py.html
+│   ├── z_145eef247bfb46b6_models_py.html
+│   └── z_145eef247bfb46b6_utils_py.html
 ├── poetry.lock
 ├── products.json
 ├── pyproject.toml
 ├── src
-│   ├── __init__.py
-│   ├── main.py
-│   ├── models.py
-│   └── utils.py
+│   ├── __init__.py
+│   ├── __pycache__
+│   │   ├── __init__.cpython-312.pyc
+│   │   ├── models.cpython-312.pyc
+│   │   └── utils.cpython-312.pyc
+│   ├── main.py
+│   ├── models.py
+│   └── utils.py
 └── tests
     ├── __init__.py
+    ├── __pycache__
+    │   ├── __init__.cpython-312.pyc
+    │   ├── conftest.cpython-312-pytest-8.3.3.pyc
+    │   ├── test_main.cpython-312-pytest-8.3.3.pyc
+    │   ├── test_models.cpython-312-pytest-8.3.3.pyc
+    │   └── test_utils.cpython-312-pytest-8.3.3.pyc
     ├── conftest.py
     ├── test_models.py
     └── test_utils.py
 
+6 directories, 33 files
 
