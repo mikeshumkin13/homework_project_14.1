@@ -26,10 +26,17 @@ class Product:
         if value >= 0:
             self._quantity = value
         else:
-            print("Количество не может быть отрицательным")
+            raise ValueError("Количество не может быть отрицательным")
 
     def __str__(self):
-        return self.name
+        """Строковое представление продукта"""
+        return f"{self.name}, {self.__price} руб. Остаток: {self.quantity} шт."
+
+    def __add__(self, other):
+        """Сложение стоимости товаров"""
+        if isinstance(other, Product):
+            return (self.price * self.quantity) + (other.price * other.quantity)
+        raise TypeError("Складывать можно только объекты класса Product")
 
     @classmethod
     def new_product(cls, product_dict):
@@ -43,23 +50,21 @@ class Product:
 
 
 class Category:
-    product_count = 0  # Переменная для отслеживания общего количества продуктов
-
     def __init__(self, name, description, products=None):
         self.name = name
         self.description = description
         self.products = products or []
-        Category.product_count += len(self.products)  # Увеличиваем счетчик продуктов
 
     def add_product(self, product):
-        if not isinstance(product, Product):  # Проверяем, что product - это экземпляр Product или его наследника
+        """Добавляет продукт в категорию"""
+        if not isinstance(product, Product):
             raise TypeError("Можно добавлять только объекты класса Product или его наследников")
         self.products.append(product)
-        Category.product_count += 1  # Увеличиваем счетчик при добавлении продукта
 
     @property
     def products(self):
         return self._products
+
 
     @products.setter
     def products(self, value):
@@ -67,3 +72,8 @@ class Category:
             self._products = value
         else:
             raise ValueError("Products must be a list")
+
+    def __str__(self):
+        """Строковое представление категории"""
+        total_quantity = sum(product.quantity for product in self.products)
+        return f"{self.name}, количество продуктов: {total_quantity} шт."

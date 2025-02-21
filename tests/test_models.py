@@ -2,65 +2,44 @@ import pytest
 from src.models import Product, Category
 
 
-def test_product_initialization(product1):
+def test_product_initialization():
     """Проверяет корректность инициализации объекта Product."""
-    assert product1.name == "Samsung Galaxy S23 Ultra"
-    assert product1.description == "256GB, Серый цвет, 200MP камера"
-    assert product1.price == 180000.0
-    assert product1.quantity == 5
+    product = Product("Samsung Galaxy S23 Ultra", "256GB, Серый цвет", 180000.0, 5)
+    assert product.name == "Samsung Galaxy S23 Ultra"
+    assert product.description == "256GB, Серый цвет"
+    assert product.price == 180000.0
+    assert product.quantity == 5
 
 
-def test_category_initialization(category1):
+def test_category_initialization():
     """Проверяет корректность инициализации объекта Category."""
-    assert category1.name == "Смартфоны"
-    assert category1.description == "Категория для смартфонов"
-    assert len(category1.products) == 3  # Используем геттер для доступа
+    product1 = Product("Samsung Galaxy S23 Ultra", "256GB, Серый цвет", 180000.0, 5)
+    product2 = Product("Iphone 15", "512GB, Gray space", 210000.0, 8)
+    category = Category("Смартфоны", "Категория для смартфонов", [product1, product2])
+
+    assert category.name == "Смартфоны"
+    assert category.description == "Категория для смартфонов"
+    assert len(category.products) == 2
 
 
 def test_category_and_product_counts():
-    """Проверяет корректность подсчета количества категорий и продуктов."""
-    # Сброс счетчиков перед тестом
-    Category.product_count = 0
-
-    product1 = Product("Samsung Galaxy S23 Ultra", "256GB, Серый цвет, 200MP камера", 180000.0, 5)
+    """Проверяет корректность подсчета количества продуктов."""
+    product1 = Product("Samsung Galaxy S23 Ultra", "256GB, Серый цвет", 180000.0, 5)
     product2 = Product("Iphone 15", "512GB, Gray space", 210000.0, 8)
-    category1 = Category("Смартфоны", "Категория для смартфонов", [product1, product2])
+    category = Category("Смартфоны", "Категория для смартфонов", [product1, product2])
 
-    assert Category.product_count == 2
+    assert len(category.products) == 2  # Теперь проверяем длину списка
 
 
 def test_add_product():
-    """Проверяет добавление продукта в категорию и увеличение счетчика."""
+    """Проверяет добавление продукта в категорию."""
     category = Category("Телевизоры", "Категория для телевизоров")
     product = Product("Samsung QLED 55", "55\" 4K UHD", 123000.0, 7)
 
-    initial_count = Category.product_count
     category.add_product(product)
 
-    # Проверяем добавление через геттер
-    assert any(product.name == "Samsung QLED 55" for product in category.products)
-    assert Category.product_count == initial_count + 1
+    assert product in category.products  # Проверяем, что продукт добавлен
 
-
-def test_products_getter():
-    category = Category("Телевизоры", "Категория для телевизоров")
-    product1 = Product("Samsung QLED 55", "55\" 4K UHD", 123000.0, 7)
-    product2 = Product("LG OLED 65", "65\" 4K HDR", 210000.0, 5)
-
-    category.add_product(product1)
-    category.add_product(product2)
-
-    expected_output = (
-        "Samsung QLED 55, 123000.0 руб. Остаток: 7 шт.\n"
-        "LG OLED 65, 210000.0 руб. Остаток: 5 шт."
-    )
-
-    # Преобразуем список продуктов в строковое представление
-    actual_output = "\n".join(
-        [f"{product.name}, {product.price} руб. Остаток: {product.quantity} шт." for product in category.products]
-    )
-
-    assert actual_output == expected_output
 
 def test_price_setter():
     """Проверяет корректность работы сеттера цены."""
@@ -71,6 +50,8 @@ def test_price_setter():
 
     with pytest.raises(ValueError, match="Цена не может быть отрицательной"):
         product.price = -50
+
+
 def test_new_product():
     """Проверяет создание нового продукта через метод new_product."""
     product_dict = {
@@ -79,7 +60,7 @@ def test_new_product():
         "price": 70000.0,
         "quantity": 15
     }
-    new_product = Category.new_product(product_dict)
+    new_product = Product.new_product(product_dict)
 
     assert isinstance(new_product, Product)
     assert new_product.name == "Sony Xperia"
@@ -87,3 +68,14 @@ def test_new_product():
     assert new_product.price == 70000.0
     assert new_product.quantity == 15
 
+
+def test_product_str():
+    """Тест строкового представления Product."""
+    product = Product("iPhone 15", "512GB, Gray", 210000, 8)
+    assert str(product) == "iPhone 15, 210000 руб. Остаток: 8 шт."
+
+
+def test_category_str():
+    """Тест строкового представления Category."""
+    category = Category("Ноутбуки", "Категория для ноутбуков")
+    assert str(category) == "Ноутбуки, количество продуктов: 0 шт."
