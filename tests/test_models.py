@@ -1,5 +1,5 @@
 import pytest
-from src.models import Product, Category
+from src.models import Product, Category, Smartphone, LawnGrass
 
 
 def test_product_initialization():
