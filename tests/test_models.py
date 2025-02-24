@@ -1,5 +1,5 @@
 import pytest
-from src.models import Product, Category, Smartphone, LawnGrass
+from src.models import Product, Category, Smartphone, LawnGrass, BaseProduct, LoggingMixin
 
 
 def test_product_initialization():
@@ -80,6 +80,7 @@ def test_category_str():
     category = Category("Ноутбуки", "Категория для ноутбуков")
     assert str(category) == "Ноутбуки, количество продуктов: 0 шт."
 
+
 def test_smartphone_initialization():
     """Тест создания смартфона"""
     smartphone = Smartphone("iPhone 15", "512GB, Gray", 210000, 8, 98.2, "15", 512, "Gray space")
@@ -87,12 +88,14 @@ def test_smartphone_initialization():
     assert smartphone.memory == 512
     assert smartphone.color == "Gray space"
 
+
 def test_lawngrass_initialization():
     """Тест создания газонной травы"""
     grass = LawnGrass("Газонная трава", "Элитная трава", 500.0, 20, "Россия", "7 дней", "Зеленый")
     assert grass.name == "Газонная трава"
     assert grass.country == "Россия"
     assert grass.color == "Зеленый"
+
 
 def test_add_product_only_valid_types():
     """Тест на запрет добавления объектов, не являющихся Product"""
@@ -104,11 +107,13 @@ def test_add_product_only_valid_types():
     with pytest.raises(TypeError):
         category.add_product("Не продукт")
 
+
 def test_addition_of_same_type():
     """Тест сложения объектов одного типа"""
     smartphone1 = Smartphone("Samsung S23", "256GB", 180000, 5, 95.5, "S23 Ultra", 256, "Серый")
     smartphone2 = Smartphone("iPhone 15", "512GB", 210000, 8, 98.2, "15", 512, "Gray space")
     assert smartphone1 + smartphone2 == (180000 * 5) + (210000 * 8)
+
 
 def test_addition_of_different_types():
     """Тест невозможности сложения товаров разных типов"""
@@ -118,3 +123,45 @@ def test_addition_of_different_types():
     with pytest.raises(TypeError):
         smartphone + grass
 
+
+def test_base_product():
+    """Тест абстрактного класса BaseProduct"""
+    class TestProduct(BaseProduct):
+        def __str__(self):
+            return "Тестовый продукт"
+
+    test_product = TestProduct("Товар", "Описание", 1000, 10)
+    assert test_product.name == "Товар"
+    assert test_product.price == 1000
+
+
+def test_logging_mixin(capsys):
+    """Тест миксина LoggingMixin"""
+
+    class TestClass(LoggingMixin, BaseProduct):
+        def __init__(self, name, description, price, quantity):
+            super().__init__(name, description, price, quantity)
+
+        def __str__(self):
+            return "Тестовый продукт"
+
+    obj = TestClass("Товар", "Описание", 1000, 10)
+    captured = capsys.readouterr()
+    assert "Создан объект TestClass с параметрами" in captured.out
+
+
+def test_category_counts():
+    """Тест счетчиков категорий и продуктов"""
+    Category.category_count = 0
+    Category.product_count = 0
+
+    category1 = Category("Смартфоны", "Категория смартфонов", [
+        Product("Samsung", "256GB", 1000, 2),
+        Product("iPhone", "512GB", 2000, 3)
+    ])
+    category2 = Category("Телевизоры", "Категория телевизоров", [
+        Product("LG OLED", "4K UHD", 120000, 4)
+    ])
+
+    assert Category.category_count == 2
+    assert Category.product_count == 3  # В сумме 3 продукта
