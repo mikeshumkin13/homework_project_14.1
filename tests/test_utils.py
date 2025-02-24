@@ -11,9 +11,6 @@ def test_load_data_from_json():
     # Загружаем данные из тестового JSON файла
     categories = load_data_from_json('products.json')
 
-    # Увеличиваем счетчики вручную после загрузки
-    for category in categories:
-        Category.increment_counts(category.products)
 
     # Проверяем количество загруженных категорий и продуктов
     assert len(categories) == 2
