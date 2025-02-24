@@ -58,6 +58,7 @@ class Smartphone(Product):
         self.memory = memory  # Объем встроенной памяти
         self.color = color  # Цвет
 
+
 class LawnGrass(Product):
     """Класс-наследник для газонной травы"""
     def __init__(self, name, description, price, quantity, country, germination_period, color):
@@ -68,21 +69,24 @@ class LawnGrass(Product):
 
 
 class Category:
+    product_count = 0  # Глобальный счетчик всех продуктов
+
     def __init__(self, name, description, products=None):
         self.name = name
         self.description = description
-        self.products = products or []
+        self._products = products or []
+        Category.product_count += len(self._products)  # Учитываем уже добавленные продукты
 
     def add_product(self, product):
         """Добавляет продукт в категорию только если он является Product или его наследником"""
         if not isinstance(product, Product):
             raise TypeError("Можно добавлять только объекты класса Product или его наследников")
-        self.products.append(product)
+        self._products.append(product)
+        Category.product_count += 1  # Увеличиваем счетчик
 
     @property
     def products(self):
         return self._products
-
 
     @products.setter
     def products(self, value):
