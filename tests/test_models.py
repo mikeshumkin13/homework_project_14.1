@@ -79,3 +79,42 @@ def test_category_str():
     """Тест строкового представления Category."""
     category = Category("Ноутбуки", "Категория для ноутбуков")
     assert str(category) == "Ноутбуки, количество продуктов: 0 шт."
+
+def test_smartphone_initialization():
+    """Тест создания смартфона"""
+    smartphone = Smartphone("iPhone 15", "512GB, Gray", 210000, 8, 98.2, "15", 512, "Gray space")
+    assert smartphone.name == "iPhone 15"
+    assert smartphone.memory == 512
+    assert smartphone.color == "Gray space"
+
+def test_lawngrass_initialization():
+    """Тест создания газонной травы"""
+    grass = LawnGrass("Газонная трава", "Элитная трава", 500.0, 20, "Россия", "7 дней", "Зеленый")
+    assert grass.name == "Газонная трава"
+    assert grass.country == "Россия"
+    assert grass.color == "Зеленый"
+
+def test_add_product_only_valid_types():
+    """Тест на запрет добавления объектов, не являющихся Product"""
+    category = Category("Смартфоны", "Описание")
+    smartphone = Smartphone("Samsung S23", "256GB", 180000, 5, 95.5, "S23 Ultra", 256, "Серый")
+
+    category.add_product(smartphone)
+
+    with pytest.raises(TypeError):
+        category.add_product("Не продукт")
+
+def test_addition_of_same_type():
+    """Тест сложения объектов одного типа"""
+    smartphone1 = Smartphone("Samsung S23", "256GB", 180000, 5, 95.5, "S23 Ultra", 256, "Серый")
+    smartphone2 = Smartphone("iPhone 15", "512GB", 210000, 8, 98.2, "15", 512, "Gray space")
+    assert smartphone1 + smartphone2 == (180000 * 5) + (210000 * 8)
+
+def test_addition_of_different_types():
+    """Тест невозможности сложения товаров разных типов"""
+    smartphone = Smartphone("Samsung S23", "256GB", 180000, 5, 95.5, "S23 Ultra", 256, "Серый")
+    grass = LawnGrass("Газонная трава", "Элитная трава", 500.0, 20, "Россия", "7 дней", "Зеленый")
+
+    with pytest.raises(TypeError):
+        smartphone + grass
+

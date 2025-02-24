@@ -101,3 +101,9 @@ poetry run pytest --cov=src --cov-report=term-missing
 
 6 directories, 33 files
 
+**Функционал**
+
+* Добавлены классы Smartphone и LawnGrass.
+* Ограничено сложение товаров разного типа.
+* Доработан метод добавления продуктов в категорию.
+* Написаны новые тесты.

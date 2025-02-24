@@ -33,10 +33,10 @@ class Product:
         return f"{self.name}, {self.__price} руб. Остаток: {self.quantity} шт."
 
     def __add__(self, other):
-        """Сложение стоимости товаров"""
-        if isinstance(other, Product):
-            return (self.price * self.quantity) + (other.price * other.quantity)
-        raise TypeError("Складывать можно только объекты класса Product")
+        """Складываем стоимость только товаров одного типа"""
+        if type(self) is not type(other):
+            raise TypeError("Складывать можно только товары одного типа")
+        return (self.price * self.quantity) + (other.price * other.quantity)
 
     @classmethod
     def new_product(cls, product_dict):
@@ -49,6 +49,24 @@ class Product:
         )
 
 
+class Smartphone(Product):
+    """Класс-наследник для смартфонов"""
+    def __init__(self, name, description, price, quantity, efficiency, model, memory, color):
+        super().__init__(name, description, price, quantity)
+        self.efficiency = efficiency  # Производительность
+        self.model = model  # Модель
+        self.memory = memory  # Объем встроенной памяти
+        self.color = color  # Цвет
+
+class LawnGrass(Product):
+    """Класс-наследник для газонной травы"""
+    def __init__(self, name, description, price, quantity, country, germination_period, color):
+        super().__init__(name, description, price, quantity)
+        self.country = country  # Страна-производитель
+        self.germination_period = germination_period  # Срок прорастания
+        self.color = color  # Цвет
+
+
 class Category:
     def __init__(self, name, description, products=None):
         self.name = name
@@ -56,7 +74,7 @@ class Category:
         self.products = products or []
 
     def add_product(self, product):
-        """Добавляет продукт в категорию"""
+        """Добавляет продукт в категорию только если он является Product или его наследником"""
         if not isinstance(product, Product):
             raise TypeError("Можно добавлять только объекты класса Product или его наследников")
         self.products.append(product)
