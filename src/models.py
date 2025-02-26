@@ -1,21 +1,40 @@
-class Product:
+from abc import ABC, abstractmethod
+
+
+class LoggingMixin:
+    """Миксин для логирования информации о создании объектов"""
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)  # Важно вызвать сначала!
+        class_name = self.__class__.__name__
+        print(f"Создан объект {class_name} с параметрами: {args}, {kwargs}")
+
+
+class BaseProduct(ABC):
+    """Абстрактный базовый класс для всех продуктов"""
+
     def __init__(self, name, description, price, quantity):
         self.name = name
         self.description = description
-        self.__price = price
-        self.quantity = quantity
+        self._price = price  # Используем _price вместо price
+        self._quantity = quantity  # Используем _quantity вместо quantity
+
+    @abstractmethod
+    def __str__(self):
+        """Абстрактный метод строкового представления продукта"""
+        pass
 
     @property
     def price(self):
         """Геттер для цены"""
-        return self.__price
+        return self._price
 
     @price.setter
     def price(self, new_price):
         """Сеттер для цены"""
         if new_price < 0:
             raise ValueError("Цена не может быть отрицательной")
-        self.__price = new_price
+        self._price = new_price
 
     @property
     def quantity(self):
@@ -28,9 +47,15 @@ class Product:
         else:
             raise ValueError("Количество не может быть отрицательным")
 
+
+class Product(LoggingMixin, BaseProduct):
+    """Класс продукта, наследуется от BaseProduct и LoggingMixin"""
+
+    def __init__(self, name, description, price, quantity):
+        super().__init__(name, description, price, quantity)
+
     def __str__(self):
-        """Строковое представление продукта"""
-        return f"{self.name}, {self.__price} руб. Остаток: {self.quantity} шт."
+        return f"{self.name}, {self.price} руб. Остаток: {self.quantity} шт."
 
     def __add__(self, other):
         """Складываем стоимость только товаров одного типа"""
@@ -51,26 +76,30 @@ class Product:
 
 class Smartphone(Product):
     """Класс-наследник для смартфонов"""
+
     def __init__(self, name, description, price, quantity, efficiency, model, memory, color):
         super().__init__(name, description, price, quantity)
-        self.efficiency = efficiency  # Производительность
-        self.model = model  # Модель
-        self.memory = memory  # Объем встроенной памяти
-        self.color = color  # Цвет
+        self.efficiency = efficiency
+        self.model = model
+        self.memory = memory
+        self.color = color
 
 
 class LawnGrass(Product):
     """Класс-наследник для газонной травы"""
+
     def __init__(self, name, description, price, quantity, country, germination_period, color):
         super().__init__(name, description, price, quantity)
-        self.country = country  # Страна-производитель
-        self.germination_period = germination_period  # Срок прорастания
-        self.color = color  # Цвет
+        self.country = country
+        self.germination_period = germination_period
+        self.color = color
 
 
 class Category:
+    """Класс категории товаров"""
+
     product_count = 0  # Глобальный счетчик всех продуктов
-    category_count = 0  # Счетчик категорий
+    category_count = 0  # Глобальный счетчик категорий
 
     def __init__(self, name, description, products=None):
         self.name = name
@@ -78,12 +107,6 @@ class Category:
         self._products = products or []
         Category.product_count += len(self._products)  # Учитываем уже добавленные продукты
         Category.category_count += 1  # Увеличиваем счетчик при создании категории
-
-    @classmethod
-    def increment_counts(cls, products):
-        """Метод пересчитывает количество продуктов"""
-        cls.product_count += len(products)
-
 
     def add_product(self, product):
         """Добавляет продукт в категорию только если он является Product или его наследником"""
@@ -107,3 +130,18 @@ class Category:
         """Строковое представление категории"""
         total_quantity = sum(product.quantity for product in self.products)
         return f"{self.name}, количество продуктов: {total_quantity} шт."
+
+
+class Order:
+    """Класс заказа"""
+
+    def __init__(self, product, quantity):
+        if not isinstance(product, Product):
+            raise TypeError("В заказ можно добавить только объект класса Product")
+        if quantity > product.quantity:
+            raise ValueError("Нельзя заказать больше, чем есть в наличии")
+
+        self.product = product
+        self.quantity = quantity
+        self.total_price = product.price * quantity
+
