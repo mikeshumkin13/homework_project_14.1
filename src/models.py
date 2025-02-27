@@ -57,9 +57,11 @@ class BaseProduct(ABC):
 
 
 class Product(LoggingMixin, BaseProduct):
-    """Класс продукта, наследуется от BaseProduct и LoggingMixin."""
+    """Класс продукта"""
 
     def __init__(self, name, description, price, quantity):
+        if quantity == 0:
+            raise ZeroQuantityError("Ошибка: Нельзя добавить товар с нулевым количеством.")
         super().__init__(name, description, price, quantity)
 
     def __str__(self):
