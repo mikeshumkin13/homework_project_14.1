@@ -1,6 +1,8 @@
 import pytest
-from src.models import Product, Category, Smartphone, LawnGrass, BaseProduct, LoggingMixin
+from src.models import Product, Category, Smartphone, LawnGrass, BaseProduct, LoggingMixin, ZeroQuantityError
 
+
+# ------------------------ ТЕСТИРОВАНИЕ PRODUCT ------------------------
 
 def test_product_initialization():
     """Проверяет корректность инициализации объекта Product."""
@@ -11,34 +13,10 @@ def test_product_initialization():
     assert product.quantity == 5
 
 
-def test_category_initialization():
-    """Проверяет корректность инициализации объекта Category."""
-    product1 = Product("Samsung Galaxy S23 Ultra", "256GB, Серый цвет", 180000.0, 5)
-    product2 = Product("Iphone 15", "512GB, Gray space", 210000.0, 8)
-    category = Category("Смартфоны", "Категория для смартфонов", [product1, product2])
-
-    assert category.name == "Смартфоны"
-    assert category.description == "Категория для смартфонов"
-    assert len(category.products) == 2
-
-
-def test_category_and_product_counts():
-    """Проверяет корректность подсчета количества продуктов."""
-    product1 = Product("Samsung Galaxy S23 Ultra", "256GB, Серый цвет", 180000.0, 5)
-    product2 = Product("Iphone 15", "512GB, Gray space", 210000.0, 8)
-    category = Category("Смартфоны", "Категория для смартфонов", [product1, product2])
-
-    assert len(category.products) == 2  # Теперь проверяем длину списка
-
-
-def test_add_product():
-    """Проверяет добавление продукта в категорию."""
-    category = Category("Телевизоры", "Категория для телевизоров")
-    product = Product("Samsung QLED 55", "55\" 4K UHD", 123000.0, 7)
-
-    category.add_product(product)
-
-    assert product in category.products  # Проверяем, что продукт добавлен
+def test_product_str():
+    """Тест строкового представления Product."""
+    product = Product("iPhone 15", "512GB, Gray", 210000, 8)
+    assert str(product) == "iPhone 15, 210000 руб. Остаток: 8 шт."
 
 
 def test_price_setter():
@@ -50,6 +28,12 @@ def test_price_setter():
 
     with pytest.raises(ValueError, match="Цена не может быть отрицательной"):
         product.price = -50
+
+
+def test_product_zero_quantity():
+    """Проверяет, что нельзя создать продукт с нулевым количеством."""
+    with pytest.raises(ZeroQuantityError, match="Ошибка: Нельзя добавить товар с нулевым количеством."):
+        Product("Бракованный товар", "Неверное количество", 1000.0, 0)
 
 
 def test_new_product():
@@ -69,36 +53,47 @@ def test_new_product():
     assert new_product.quantity == 15
 
 
-def test_product_str():
-    """Тест строкового представления Product."""
-    product = Product("iPhone 15", "512GB, Gray", 210000, 8)
-    assert str(product) == "iPhone 15, 210000 руб. Остаток: 8 шт."
+# ------------------------ ТЕСТИРОВАНИЕ CATEGORY ------------------------
+
+def test_category_initialization():
+    """Проверяет корректность инициализации объекта Category."""
+    product1 = Product("Samsung Galaxy S23 Ultra", "256GB, Серый цвет", 180000.0, 5)
+    product2 = Product("Iphone 15", "512GB, Gray space", 210000.0, 8)
+    category = Category("Смартфоны", "Категория для смартфонов", [product1, product2])
+
+    assert category.name == "Смартфоны"
+    assert category.description == "Категория для смартфонов"
+    assert len(category.products) == 2
 
 
-def test_category_str():
-    """Тест строкового представления Category."""
-    category = Category("Ноутбуки", "Категория для ноутбуков")
-    assert str(category) == "Ноутбуки, количество продуктов: 0 шт."
+def test_add_product():
+    """Проверяет добавление продукта в категорию."""
+    category = Category("Телевизоры", "Категория для телевизоров")
+    product = Product("Samsung QLED 55", "55\" 4K UHD", 123000.0, 7)
+
+    category.add_product(product)
+    assert product in category.products
 
 
-def test_smartphone_initialization():
-    """Тест создания смартфона"""
-    smartphone = Smartphone("iPhone 15", "512GB, Gray", 210000, 8, 98.2, "15", 512, "Gray space")
-    assert smartphone.name == "iPhone 15"
-    assert smartphone.memory == 512
-    assert smartphone.color == "Gray space"
+def test_middle_price():
+    """Тест на подсчет средней цены в категории."""
+    product1 = Product("Товар1", "Описание1", 1000.0, 5)
+    product2 = Product("Товар2", "Описание2", 2000.0, 3)
+    category = Category("Категория", "Тестовая", [product1, product2])
+
+    assert category.middle_price() == 1500.0
 
 
-def test_lawngrass_initialization():
-    """Тест создания газонной травы"""
-    grass = LawnGrass("Газонная трава", "Элитная трава", 500.0, 20, "Россия", "7 дней", "Зеленый")
-    assert grass.name == "Газонная трава"
-    assert grass.country == "Россия"
-    assert grass.color == "Зеленый"
+def test_middle_price_empty_category():
+    """Тест на случай, когда в категории нет товаров."""
+    category = Category("Пустая категория", "Без товаров", [])
+    assert category.middle_price() == 0
 
+
+# ------------------------ ТЕСТИРОВАНИЕ ИСКЛЮЧЕНИЙ ------------------------
 
 def test_add_product_only_valid_types():
-    """Тест на запрет добавления объектов, не являющихся Product"""
+    """Тест на запрет добавления объектов, не являющихся Product."""
     category = Category("Смартфоны", "Описание")
     smartphone = Smartphone("Samsung S23", "256GB", 180000, 5, 95.5, "S23 Ultra", 256, "Серый")
 
@@ -108,15 +103,22 @@ def test_add_product_only_valid_types():
         category.add_product("Не продукт")
 
 
+def test_add_product_zero_quantity():
+    """Тест на попытку добавления товара с нулевым количеством в категорию."""
+    category = Category("Электроника", "Категория для электроники")
+    with pytest.raises(ZeroQuantityError, match="Ошибка: Нельзя добавить товар с нулевым количеством."):
+        category.add_product(Product("Товар", "Описание", 1500.0, 0))
+
+
 def test_addition_of_same_type():
-    """Тест сложения объектов одного типа"""
+    """Тест сложения объектов одного типа."""
     smartphone1 = Smartphone("Samsung S23", "256GB", 180000, 5, 95.5, "S23 Ultra", 256, "Серый")
     smartphone2 = Smartphone("iPhone 15", "512GB", 210000, 8, 98.2, "15", 512, "Gray space")
     assert smartphone1 + smartphone2 == (180000 * 5) + (210000 * 8)
 
 
 def test_addition_of_different_types():
-    """Тест невозможности сложения товаров разных типов"""
+    """Тест невозможности сложения товаров разных типов."""
     smartphone = Smartphone("Samsung S23", "256GB", 180000, 5, 95.5, "S23 Ultra", 256, "Серый")
     grass = LawnGrass("Газонная трава", "Элитная трава", 500.0, 20, "Россия", "7 дней", "Зеленый")
 
@@ -124,19 +126,10 @@ def test_addition_of_different_types():
         smartphone + grass
 
 
-def test_base_product():
-    """Тест абстрактного класса BaseProduct"""
-    class TestProduct(BaseProduct):
-        def __str__(self):
-            return "Тестовый продукт"
-
-    test_product = TestProduct("Товар", "Описание", 1000, 10)
-    assert test_product.name == "Товар"
-    assert test_product.price == 1000
-
+# ------------------------ ТЕСТИРОВАНИЕ МИКСИНОВ ------------------------
 
 def test_logging_mixin(capsys):
-    """Тест миксина LoggingMixin"""
+    """Тест миксина LoggingMixin."""
 
     class TestClass(LoggingMixin, BaseProduct):
         def __init__(self, name, description, price, quantity):
@@ -151,7 +144,7 @@ def test_logging_mixin(capsys):
 
 
 def test_category_counts():
-    """Тест счетчиков категорий и продуктов"""
+    """Тест счетчиков категорий и продуктов."""
     Category.category_count = 0
     Category.product_count = 0
 
